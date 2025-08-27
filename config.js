@@ -31,8 +31,8 @@ window.config = {
                 correct: 1
             }
         ],
-        rewardPerQuestion: 3,
-        completionBonus: 10
+        rewardPerQuestion: 10,
+        completionBonus: 20
     },
 
     // НАСТРОЙКИ КВЕСТА
@@ -67,8 +67,8 @@ window.config = {
                 ]
             }
         ],
-        rewardPerStep: 5,
-        completionBonus: 20
+        rewardPerStep: 10,
+        completionBonus: 30
     },
 
     // НАСТРОЙКИ МАГАЗИНА
@@ -79,29 +79,29 @@ window.config = {
                 id: 1,
                 name: "Фирменная ручка АГРОЭКО",
                 description: "Стильная ручка с логотипом компании для повседневных записей.",
-                price: 15,
+                price: 30,
                 image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Ручка+АГРОЭКО"
             },
             {
                 id: 2,
-                name: "Экскурсия на ферму",
-                description: "Увлекательная экскурсия на современную свиноферму компании. Увидите всё своими глазами!",
-                price: 100,
-                image: "https://via.placeholder.com/200x200/388E3C/FFFFFF?text=Экскурсия+на+ферму"
-            },
-            {
-                id: 3,
                 name: "Набор экопродукции",
                 description: "Вкуснейшие продукты от АГРОЭКО: свежие овощи и экологичное мясо.",
-                price: 50,
+                price: 60,
                 image: "https://via.placeholder.com/200x200/8BC34A/FFFFFF?text=Набор+Экопродукции"
             },
             {
-                id: 4,
+                id: 3,
                 name: "Фирменная футболка",
                 description: "Качественная хлопковая футболка с символикой АГРОЭКО.",
-                price: 30,
+                price: 80,
                 image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Футболка+АГРОЭКО"
+            },
+            {
+                id: 4,
+                name: "Экскурсия на ферму + полный набор",
+                description: "Увлекательная экскурсия на современную свиноферму компании + все призы!",
+                price: 100,
+                image: "https://via.placeholder.com/200x200/388E3C/FFFFFF?text=Главный+Приз"
             }
         ]
     }
