@@ -47,7 +47,6 @@ header {
 header .logo {
     height: 50px;
     margin-bottom: 15px;
-    filter: brightness(0) invert(1);
 }
 
 .score-container {
