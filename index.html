@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroEco Викторина 🐽</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <img src="https://agroeco.ru/local/templates/main/img/logo.svg" alt="AgroEco Logo" class="logo">
+            <h1>Добро пожаловать в AgroEco!</h1>
+            <div class="score-container">
+                Ваши пяточки: <span id="userScore">0</span> <span class="pig-nose">🐽</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- Экран меню -->
+            <section id="screen-menu" class="screen active">
+                <h2>Выберите действие</h2>
+                <button onclick="showScreen('screen-quiz')">Пройти тест о компании</button>
+                <button onclick="startQuest()">Начать квест "Секреты свиноводства"</button>
+                <button onclick="showScreen('screen-store')">Магазин призов</button>
+            </section>
+
+            <!-- Экран теста -->
+            <section id="screen-quiz" class="screen">
+                <h2>Тест: Как хорошо вы знаете AgroEco?</h2>
+                <div id="quiz-container">
+                    <div id="question"></div>
+                    <div id="answers" class="answers"></div>
+                    <button id="next-question" onclick="nextQuestion()" disabled>Следующий вопрос</button>
+                </div>
+                <button onclick="showScreen('screen-menu')">Назад в меню</button>
+            </section>
+
+            <!-- Экран квеста -->
+            <section id="screen-quest" class="screen">
+                <h2 id="quest-title">Квест: Секреты свиноводства</h2>
+                <p id="quest-description"></p>
+                <div id="quest-options" class="answers"></div>
+                <button onclick="showScreen('screen-menu')">Назад в меню</button>
+            </section>
+
+            <!-- Экран магазина -->
+            <section id="screen-store" class="screen">
+                <h2>Магазин призов</h2>
+                <p>Обменивайте ваши пяточки на крутые призы!</p>
+                <div id="store-items"></div>
+                <button onclick="showScreen('screen-menu')">Назад в меню</button>
+            </section>
+
+            <!-- Экран успеха -->
+            <section id="screen-success" class="screen">
+                <h2>Поздравляем!</h2>
+                <p id="success-message"></p>
+                <button onclick="showScreen('screen-menu')">Отлично!</button>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
