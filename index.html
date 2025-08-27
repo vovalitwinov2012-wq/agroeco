@@ -23,23 +23,14 @@
         </header>
 
         <main>
-            <!-- Экран загрузки -->
-            <section id="screen-loading" class="screen active">
-                <div class="loading-content">
-                    <img src="IMG_5648.png" alt="АГРОЭКО" class="loading-logo">
-                    <h2>Загрузка...</h2>
-                    <div class="loading-spinner"></div>
-                </div>
-            </section>
-
             <!-- Экран меню -->
-            <section id="screen-menu" class="screen">
+            <section id="screen-menu" class="screen active">
                 <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Поля АГРОЭКО" class="screen-image">
                 <h2>Добро пожаловать, <span id="menu-user-name">Друг</span>!</h2>
                 <p>Изучайте компанию АГРОЭКО, участвуйте в викторинах и получайте награды!</p>
                 <div class="button-container">
-                    <button class="btn-primary" onclick="startQuiz()">🌱 Пройти тест</button>
-                    <button class="btn-primary" onclick="startQuest()">🏞️ Начать квест</button>
+                    <button class="btn-primary" onclick="startQuiz()" id="quiz-btn">🌱 Пройти тест</button>
+                    <button class="btn-primary" onclick="startQuest()" id="quest-btn">🏞️ Начать квест</button>
                     <button class="btn-secondary" onclick="showScreen('screen-store')">🛒 Магазин призов</button>
                     <button class="btn-secondary" onclick="showScreen('screen-profile')">👤 Мой профиль</button>
                     <button class="btn-secondary" onclick="showScreen('screen-stats')">📊 Моя статистика</button>
@@ -62,13 +53,16 @@
 
             <!-- Экран квеста -->
             <section id="screen-quest" class="screen">
-                <div class="quest-header">
+                <div class="quiz-header">
                     <button class="btn-back" onclick="exitQuest()">← Назад</button>
-                    <h2 id="quest-title">Квест: Путь к успеху АГРОЭКО</h2>
+                    <h2>Квест: Путь к успеху АГРОЭКО</h2>
+                    <div id="quest-progress">Шаг 1 из 3</div>
                 </div>
                 <div id="quest-image" class="quest-image"></div>
-                <p id="quest-description" class="quest-description"></p>
-                <div id="quest-options" class="answers"></div>
+                <div id="quest-container">
+                    <div id="quest-description" class="quest-description"></div>
+                    <div id="quest-answers" class="answers"></div>
+                </div>
             </section>
 
             <!-- Экран магазина -->
@@ -141,6 +135,15 @@
                 <div class="success-content">
                     <h2>🎉 Поздравляем!</h2>
                     <p id="success-message"></p>
+                    <button class="btn-primary" onclick="showScreen('screen-menu')">Вернуться в меню</button>
+                </div>
+            </section>
+
+            <!-- Экран завершенного теста/квеста -->
+            <section id="screen-completed" class="screen">
+                <div class="success-content">
+                    <h2>✅ Уже пройдено</h2>
+                    <p id="completed-message"></p>
                     <button class="btn-primary" onclick="showScreen('screen-menu')">Вернуться в меню</button>
                 </div>
             </section>
