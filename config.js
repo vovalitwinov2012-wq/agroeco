@@ -1,5 +1,4 @@
 // CONFIG.JS - КОНФИГУРАЦИЯ ПРИЛОЖЕНИЯ
-// ВСЕ ТЕКСТЫ И НАСТРОЙКИ МЕНЯЮТСЯ ЗДЕСЬ
 
 window.config = {
     // НАСТРОЙКИ ТЕСТА
@@ -41,7 +40,7 @@ window.config = {
         steps: [
             {
                 description: "Вы - новый агроном в компании АГРОЭКО. Ваша первая задача - выбрать стратегию для повышения урожайности. Что вы выберете?",
-                image: "https://agroeco.ru/upload/iblock/195/195dccd6cae13283778c803d7560c98f.jpg",
+                image: "https://images.unsplash.com/photo-1625246335525-8f984e4f34a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
                 options: [
                     { text: "Интенсивное использование химикатов", nextStep: -1 },
                     { text: "Внедрение точного земледелия и современных технологий", nextStep: 1, correct: true },
@@ -50,7 +49,7 @@ window.config = {
             },
             {
                 description: "Отличный выбор! Теперь в свиноводческом комплексе. Как обеспечить лучшие условия для животных?",
-                image: "https://agroeco.ru/upload/iblock/48b/48b0d2e7e534ed1c5d2c0d72c6c6c7c1.jpg",
+                image: "https://images.unsplash.com/photo-1596363505726-56d487670c42?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
                 options: [
                     { text: "Минимальные затраты на содержание", nextStep: -1 },
                     { text: "Многофазная система и современные технологии содержания", nextStep: 2, correct: true },
@@ -59,7 +58,7 @@ window.config = {
             },
             {
                 description: "Правильно! Финальный этап - производство кормов. Какой подход соответствует философии АГРОЭКО?",
-                image: "https://agroeco.ru/upload/iblock/4c4/4c4c4b4e4f4b4c4a4d4e4f4a4b4c4d4e.jpg",
+                image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
                 options: [
                     { text: "Закупка дешёвых кормов", nextStep: -1 },
                     { text: "Полный цикл производства собственных экологичных кормов", nextStep: 3, correct: true },
@@ -68,7 +67,7 @@ window.config = {
             },
             {
                 description: "Поздравляем! Вы успешно прошли все этапы и поняли философию АГРОЭКО - современные технологии и забота о природе и животных!",
-                image: "https://agroeco.ru/upload/iblock/7a7/7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a.jpg",
+                image: "https://images.unsplash.com/photo-1589923188937-cb64779f4abe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
                 options: []
             }
         ],
@@ -81,10 +80,10 @@ window.config = {
         items: [
             {
                 id: 1,
-                name: "Фирменная ручка AgroEco",
+                name: "Фирменная ручка АГРОЭКО",
                 description: "Стильная ручка с логотипом компании для повседневных записей.",
                 price: 15,
-                image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Ручка+AgroEco"
+                image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Ручка+АГРОЭКО"
             },
             {
                 id: 2,
@@ -96,18 +95,17 @@ window.config = {
             {
                 id: 3,
                 name: "Набор экопродукции",
-                description: "Вкуснейшие продукты от AgroEco: свежие овощи и экологичное мясо.",
+                description: "Вкуснейшие продукты от АГРОЭКО: свежие овощи и экологичное мясо.",
                 price: 50,
                 image: "https://via.placeholder.com/200x200/8BC34A/FFFFFF?text=Набор+Экопродукции"
             },
             {
                 id: 4,
                 name: "Фирменная футболка",
-                description: "Качественная хлопковая футболка с символикой AgroEco.",
+                description: "Качественная хлопковая футболка с символикой АГРОЭКО.",
                 price: 30,
-                image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Футболка+AgroEco"
+                image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Футболка+АГРОЭКО"
             }
         ]
     }
 };
-
