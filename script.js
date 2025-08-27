@@ -13,11 +13,6 @@ let userData = {
         name: '',
         phone: '',
         address: ''
-    },
-    progress: {
-        currentQuiz: 0,
-        currentQuest: 0,
-        lastCompleted: null
     }
 };
 let currentQuestion = 0;
@@ -26,6 +21,17 @@ let currentQuestStep = 0;
 // Инициализация Telegram Web App
 function initTelegram() {
     tg = window.Telegram.WebApp;
+    
+    // Ждем полной инициализации WebApp
+    if (tg && tg.initDataUnsafe) {
+        setupApp();
+    } else {
+        // Если Telegram API еще не загружен, ждем
+        setTimeout(initTelegram, 100);
+    }
+}
+
+function setupApp() {
     tg.expand();
     tg.enableClosingConfirmation();
     
@@ -48,27 +54,24 @@ function initTelegram() {
         }
     }
     
-    // Загружаем данные пользователя из хранилища Telegram
+    // Загружаем данные пользователя
     loadUserData();
 }
 
 // Загрузка данных пользователя
 function loadUserData() {
-    const savedData = tg.CloudStorage.getItem('user_data');
-    if (savedData) {
-        try {
+    try {
+        const savedData = tg.CloudStorage.getItem('user_data');
+        if (savedData) {
             const parsedData = JSON.parse(savedData);
             userData = { ...userData, ...parsedData };
-            updateUI();
-        } catch (e) {
-            console.error('Error parsing saved data:', e);
         }
-    }
-    
-    // Показываем главное меню после загрузки
-    setTimeout(() => {
+        updateUI();
         showScreen('screen-menu');
-    }, 1000);
+    } catch (e) {
+        console.error('Error loading user data:', e);
+        showScreen('screen-menu');
+    }
 }
 
 // Сохранение данных пользователя
@@ -92,7 +95,6 @@ function saveUserData() {
 // Обновление интерфейса
 function updateUI() {
     document.getElementById('userScore').textContent = userData.score;
-    document.getElementById('profile-score').textContent = userData.score;
     
     // Обновляем статистику
     document.getElementById('stat-total-score').textContent = userData.stats.totalEarned;
@@ -112,9 +114,9 @@ function showScreen(screenId) {
     
     // Специфическая логика для разных экранов
     if (screenId === 'screen-profile') {
-        document.getElementById('user-name').value = userData.profile.name;
-        document.getElementById('user-phone').value = userData.profile.phone;
-        document.getElementById('user-address').value = userData.profile.address;
+        document.getElementById('user-name').value = userData.profile.name || '';
+        document.getElementById('user-phone').value = userData.profile.phone || '';
+        document.getElementById('user-address').value = userData.profile.address || '';
     } else if (screenId === 'screen-store') {
         loadStoreItems();
     } else if (screenId === 'screen-stats') {
