@@ -17,7 +17,10 @@ let userData = {
         name: '',
         phone: '',
         address: ''
-    }
+    },
+    userId: null,
+    username: '',
+    firstName: ''
 };
 let currentQuestion = 0;
 let currentQuestStep = 0;
@@ -37,9 +40,13 @@ function setupApp() {
     tg.expand();
     tg.enableClosingConfirmation();
     
-    // Показываем данные пользователя из Telegram
+    // Получаем данные пользователя из Telegram
     const user = tg.initDataUnsafe.user;
     if (user) {
+        userData.userId = user.id;
+        userData.username = user.username || '';
+        userData.firstName = user.first_name;
+        
         document.getElementById('userFirstName').textContent = user.first_name;
         document.getElementById('menu-user-name').textContent = user.first_name;
         
@@ -50,9 +57,15 @@ function setupApp() {
         
         document.getElementById('profile-full-name').textContent = 
             `${user.first_name}${user.last_name ? ' ' + user.last_name : ''}`;
+        document.getElementById('profile-user-id').textContent = user.id;
         
         if (user.photo_url) {
             document.getElementById('user-avatar').src = user.photo_url;
+        }
+        
+        // Показываем кнопку админа если это администратор
+        if (user.id === config.adminId) {
+            document.getElementById('admin-btn').style.display = 'block';
         }
     }
     
@@ -63,10 +76,15 @@ function setupApp() {
 // Загрузка данных пользователя
 function loadUserData() {
     try {
-        const savedData = tg.CloudStorage.getItem('user_data');
+        const savedData = tg.CloudStorage.getItem('user_data_' + userData.userId);
         if (savedData) {
             const parsedData = JSON.parse(savedData);
-            userData = { ...userData, ...parsedData };
+            // Сохраняем только данные, не перезаписываем userId и username
+            userData.score = parsedData.score || 0;
+            userData.purchases = parsedData.purchases || [];
+            userData.completed = parsedData.completed || { quiz: false, quest: false };
+            userData.stats = parsedData.stats || { quizzesCompleted: 0, questsCompleted: 0, totalEarned: 0 };
+            userData.profile = parsedData.profile || { name: '', phone: '', address: '' };
         }
         updateUI();
         updateMenuButtons();
@@ -81,7 +99,7 @@ function saveUserData() {
     userData.profile.phone = document.getElementById('user-phone').value;
     userData.profile.address = document.getElementById('user-address').value;
     
-    tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+    tg.CloudStorage.setItem('user_data_' + userData.userId, JSON.stringify(userData));
     
     const statusElement = document.getElementById('profile-save-status');
     statusElement.textContent = 'Данные успешно сохранены!';
@@ -95,12 +113,10 @@ function saveUserData() {
 // Обновление интерфейса
 function updateUI() {
     document.getElementById('userScore').textContent = userData.score;
-    
-    // Обновляем статистику
+    document.getElementById('stat-current-score').textContent = userData.score;
     document.getElementById('stat-total-score').textContent = userData.stats.totalEarned;
     document.getElementById('stat-quizzes-completed').textContent = userData.stats.quizzesCompleted;
     document.getElementById('stat-quests-completed').textContent = userData.stats.questsCompleted;
-    document.getElementById('stat-items-purchased').textContent = userData.purchases.length;
     
     updatePurchasesList();
 }
@@ -136,6 +152,8 @@ function showScreen(screenId) {
         loadStoreItems();
     } else if (screenId === 'screen-stats') {
         updateUI();
+    } else if (screenId === 'screen-admin') {
+        loadOrders();
     }
 }
 
@@ -143,7 +161,7 @@ function showScreen(screenId) {
 function updateScore(points) {
     userData.score += points;
     userData.stats.totalEarned += points;
-    tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+    tg.CloudStorage.setItem('user_data_' + userData.userId, JSON.stringify(userData));
     updateUI();
     
     if (points > 0) {
@@ -227,7 +245,7 @@ function finishQuiz() {
     updateScore(config.quiz.completionBonus);
     userData.stats.quizzesCompleted++;
     userData.completed.quiz = true;
-    tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+    tg.CloudStorage.setItem('user_data_' + userData.userId, JSON.stringify(userData));
     updateMenuButtons();
     
     showScreen('screen-success');
@@ -297,7 +315,7 @@ function questFinished() {
     updateScore(config.quest.completionBonus);
     userData.stats.questsCompleted++;
     userData.completed.quest = true;
-    tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+    tg.CloudStorage.setItem('user_data_' + userData.userId, JSON.stringify(userData));
     updateMenuButtons();
     
     showScreen('screen-success');
@@ -334,7 +352,11 @@ function buyItem(itemId, price, itemName) {
     if (userData.score >= price && !userData.purchases.includes(itemId)) {
         updateScore(-price);
         userData.purchases.push(itemId);
-        tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+        
+        // Сохраняем заказ
+        saveOrder(itemId, itemName, price);
+        
+        tg.CloudStorage.setItem('user_data_' + userData.userId, JSON.stringify(userData));
         
         showScreen('screen-success');
         document.getElementById('success-message').textContent = 
@@ -343,6 +365,81 @@ function buyItem(itemId, price, itemName) {
         loadStoreItems();
         updatePurchasesList();
     }
+}
+
+// Сохранение заказа
+function saveOrder(itemId, itemName, price) {
+    const order = {
+        id: Date.now(),
+        userId: userData.userId,
+        username: userData.username,
+        firstName: userData.firstName,
+        itemId: itemId,
+        itemName: itemName,
+        price: price,
+        date: new Date().toLocaleString('ru-RU'),
+        profile: { ...userData.profile },
+        status: 'новый'
+    };
+    
+    // Получаем текущие заказы
+    const orders = JSON.parse(tg.CloudStorage.getItem('orders') || '[]');
+    orders.push(order);
+    tg.CloudStorage.setItem('orders', JSON.stringify(orders));
+}
+
+// Загрузка заказов для админа
+function loadOrders() {
+    const orders = JSON.parse(tg.CloudStorage.getItem('orders') || '[]');
+    const tbody = document.getElementById('orders-table-body');
+    
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8">Заказов пока нет</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    orders.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${order.date}</td>
+            <td>${order.firstName}${order.username ? ' (@' + order.username + ')' : ''}</td>
+            <td>${order.itemName}</td>
+            <td>${order.price} 🐽</td>
+            <td>${order.profile.name || 'Не указано'}</td>
+            <td>${order.profile.phone || 'Не указан'}</td>
+            <td>${order.profile.address || 'Не указан'}</td>
+            <td>${order.status}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Экспорт заказов в CSV
+function exportOrders() {
+    const orders = JSON.parse(tg.CloudStorage.getItem('orders') || '[]');
+    if (orders.length === 0) {
+        alert('Нет заказов для экспорта');
+        return;
+    }
+    
+    let csv = 'Дата,Пользователь,Приз,Цена,ФИО,Телефон,Адрес,Статус\n';
+    
+    orders.forEach(order => {
+        csv += `"${order.date}","${order.firstName}${order.username ? ' (@' + order.username + ')' : ''}","${order.itemName}",${order.price},"${order.profile.name || ''}","${order.profile.phone || ''}","${order.profile.address || ''}","${order.status}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'agroeco_orders.csv');
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 function updatePurchasesList() {
