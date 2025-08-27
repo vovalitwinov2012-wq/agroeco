@@ -13,55 +13,85 @@
     <div class="app">
         <header>
             <img src="https://agroeco.ru/local/templates/main/img/logo.svg" alt="AgroEco Logo" class="logo">
-            <h1>Добро пожаловать в AgroEco!</h1>
+            <h1>AgroEco: Викторина и Квест</h1>
             <div class="score-container">
-                Ваши пяточки: <span id="userScore">0</span> <span class="pig-nose">🐽</span>
+                <span id="userScore">0</span> <span class="pig-nose">🐽</span>
             </div>
         </header>
 
         <main>
             <!-- Экран меню -->
             <section id="screen-menu" class="screen active">
-                <h2>Выберите действие</h2>
-                <button onclick="showScreen('screen-quiz')">Пройти тест о компании</button>
-                <button onclick="startQuest()">Начать квест "Секреты свиноводства"</button>
-                <button onclick="showScreen('screen-store')">Магазин призов</button>
+                <img src="https://agroeco.ru/upload/iblock/195/195dccd6cae13283778c803d7560c98f.jpg" alt="AgroEco Fields" class="screen-image">
+                <h2>Добро пожаловать в AgroEco!</h2>
+                <p>Изучайте, играйте и получайте награды!</p>
+                <div class="button-container">
+                    <button class="btn-primary" onclick="showScreen('screen-quiz')">🌱 Пройти тест</button>
+                    <button class="btn-primary" onclick="startQuest()">🏞️ Начать квест</button>
+                    <button class="btn-secondary" onclick="showScreen('screen-store')">🛒 Магазин призов</button>
+                    <button class="btn-secondary" onclick="showScreen('screen-profile')">👤 Мой профиль</button>
+                </div>
             </section>
 
             <!-- Экран теста -->
             <section id="screen-quiz" class="screen">
-                <h2>Тест: Как хорошо вы знаете AgroEco?</h2>
+                <h2>Тест: Знакомство с AgroEco</h2>
+                <div id="quiz-progress">Вопрос 1 из 5</div>
                 <div id="quiz-container">
                     <div id="question"></div>
                     <div id="answers" class="answers"></div>
-                    <button id="next-question" onclick="nextQuestion()" disabled>Следующий вопрос</button>
+                    <button id="next-question" class="btn-primary" onclick="nextQuestion()" disabled>Далее →</button>
                 </div>
-                <button onclick="showScreen('screen-menu')">Назад в меню</button>
             </section>
 
             <!-- Экран квеста -->
             <section id="screen-quest" class="screen">
-                <h2 id="quest-title">Квест: Секреты свиноводства</h2>
-                <p id="quest-description"></p>
+                <h2 id="quest-title"></h2>
+                <div id="quest-image" class="quest-image"></div>
+                <p id="quest-description" class="quest-description"></p>
                 <div id="quest-options" class="answers"></div>
-                <button onclick="showScreen('screen-menu')">Назад в меню</button>
             </section>
 
             <!-- Экран магазина -->
             <section id="screen-store" class="screen">
                 <h2>Магазин призов</h2>
-                <p>Обменивайте ваши пяточки на крутые призы!</p>
-                <div id="store-items"></div>
-                <button onclick="showScreen('screen-menu')">Назад в меню</button>
+                <p>Обменивайте ваши пяточки на уникальные призы от AgroEco!</p>
+                <div id="store-items" class="store-container"></div>
+            </section>
+
+            <!-- Экран профиля и данных для приза -->
+            <section id="screen-profile" class="screen">
+                <h2>Мой профиль</h2>
+                <div class="profile-stats">
+                    <p>Ваш баланс: <strong><span id="profile-score">0</span> 🐽</strong></p>
+                </div>
+                <div class="profile-form">
+                    <h3>Для получения физического приза заполните данные:</h3>
+                    <input type="text" id="user-name" placeholder="Ваше ФИО">
+                    <input type="tel" id="user-phone" placeholder="Ваш телефон">
+                    <input type="text" id="user-address" placeholder="Ваш адрес">
+                    <button class="btn-primary" onclick="saveUserData()">Сохранить данные</button>
+                    <p id="profile-save-status"></p>
+                </div>
+                <div class="profile-purchases">
+                    <h3>Ваши полученные призы:</h3>
+                    <ul id="user-purchases"></ul>
+                </div>
             </section>
 
             <!-- Экран успеха -->
             <section id="screen-success" class="screen">
-                <h2>Поздравляем!</h2>
-                <p id="success-message"></p>
-                <button onclick="showScreen('screen-menu')">Отлично!</button>
+                <div class="success-content">
+                    <h2>🎉 Поздравляем!</h2>
+                    <p id="success-message"></p>
+                    <button class="btn-primary" onclick="showScreen('screen-menu')">Вернуться в меню</button>
+                </div>
             </section>
         </main>
+
+        <footer>
+            <p>© 2024 AgroEco. Все права защищены.</p>
+        </footer>
     </div>
 </body>
 </html>
