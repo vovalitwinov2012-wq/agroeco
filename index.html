@@ -34,6 +34,8 @@
                     <button class="btn-secondary" onclick="showScreen('screen-store')">🛒 Магазин призов</button>
                     <button class="btn-secondary" onclick="showScreen('screen-profile')">👤 Мой профиль</button>
                     <button class="btn-secondary" onclick="showScreen('screen-stats')">📊 Моя статистика</button>
+                    <!-- Скрытая кнопка для админа -->
+                    <button class="btn-admin" onclick="showScreen('screen-admin')" id="admin-btn" style="display: none;">⚙️ Админ-панель</button>
                 </div>
             </section>
 
@@ -88,6 +90,7 @@
                     <div class="profile-details">
                         <h3 id="profile-full-name">Гость</h3>
                         <p id="profile-user-name"></p>
+                        <p>ID: <span id="profile-user-id"></span></p>
                     </div>
                 </div>
                 <div class="profile-form">
@@ -112,7 +115,11 @@
                 </div>
                 <div class="stats-container">
                     <div class="stat-card">
-                        <h3>Общее количество пяточков</h3>
+                        <h3>Текущий баланс</h3>
+                        <p class="stat-number"><span id="stat-current-score">0</span> 🐽</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Всего заработано</h3>
                         <p class="stat-number"><span id="stat-total-score">0</span> 🐽</p>
                     </div>
                     <div class="stat-card">
@@ -122,10 +129,6 @@
                     <div class="stat-card">
                         <h3>Завершено квестов</h3>
                         <p class="stat-number"><span id="stat-quests-completed">0</span></p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Куплено призов</h3>
-                        <p class="stat-number"><span id="stat-items-purchased">0</span></p>
                     </div>
                 </div>
             </section>
@@ -145,6 +148,42 @@
                     <h2>✅ Уже пройдено</h2>
                     <p id="completed-message"></p>
                     <button class="btn-primary" onclick="showScreen('screen-menu')">Вернуться в меню</button>
+                </div>
+            </section>
+
+            <!-- Админ-панель -->
+            <section id="screen-admin" class="screen">
+                <div class="screen-header">
+                    <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
+                    <h2>Админ-панель</h2>
+                </div>
+                <div class="admin-content">
+                    <h3>Заказы пользователей</h3>
+                    <div class="admin-actions">
+                        <button class="btn-primary" onclick="loadOrders()">🔄 Обновить</button>
+                        <button class="btn-secondary" onclick="exportOrders()">📊 Экспорт в CSV</button>
+                    </div>
+                    <div class="orders-table-container">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Пользователь</th>
+                                    <th>Приз</th>
+                                    <th>Цена</th>
+                                    <th>ФИО</th>
+                                    <th>Телефон</th>
+                                    <th>Адрес</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body">
+                                <tr>
+                                    <td colspan="8">Загрузка данных...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </main>
