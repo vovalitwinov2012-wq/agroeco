@@ -13,30 +13,46 @@
     <div class="app">
         <header>
             <img src="IMG_5648.png" alt="АГРОЭКО Логотип" class="logo">
-            <h1>АГРОЭКО: Викторина и Квест</h1>
+            <div class="user-info">
+                <span id="userFirstName">Друг</span>
+                <span id="userUserName"></span>
+            </div>
             <div class="score-container">
                 <span id="userScore">0</span> <span class="pig-nose">🐽</span>
             </div>
         </header>
 
         <main>
+            <!-- Экран загрузки -->
+            <section id="screen-loading" class="screen active">
+                <div class="loading-content">
+                    <img src="IMG_5648.png" alt="АГРОЭКО" class="loading-logo">
+                    <h2>Загрузка...</h2>
+                    <div class="loading-spinner"></div>
+                </div>
+            </section>
+
             <!-- Экран меню -->
-            <section id="screen-menu" class="screen active">
+            <section id="screen-menu" class="screen">
                 <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Поля АГРОЭКО" class="screen-image">
-                <h2>Добро пожаловать в АГРОЭКО!</h2>
-                <p>Изучайте, играйте и получайте награды!</p>
+                <h2>Добро пожаловать, <span id="menu-user-name">Друг</span>!</h2>
+                <p>Изучайте компанию АГРОЭКО, участвуйте в викторинах и получайте награды!</p>
                 <div class="button-container">
-                    <button class="btn-primary" onclick="showScreen('screen-quiz')">🌱 Пройти тест</button>
+                    <button class="btn-primary" onclick="startQuiz()">🌱 Пройти тест</button>
                     <button class="btn-primary" onclick="startQuest()">🏞️ Начать квест</button>
                     <button class="btn-secondary" onclick="showScreen('screen-store')">🛒 Магазин призов</button>
                     <button class="btn-secondary" onclick="showScreen('screen-profile')">👤 Мой профиль</button>
+                    <button class="btn-secondary" onclick="showScreen('screen-stats')">📊 Моя статистика</button>
                 </div>
             </section>
 
             <!-- Экран теста -->
             <section id="screen-quiz" class="screen">
-                <h2>Тест: Знакомство с АГРОЭКО</h2>
-                <div id="quiz-progress">Вопрос 1 из 5</div>
+                <div class="quiz-header">
+                    <button class="btn-back" onclick="exitQuiz()">← Назад</button>
+                    <h2>Тест: Знакомство с АГРОЭКО</h2>
+                    <div id="quiz-progress">Вопрос 1 из 5</div>
+                </div>
                 <div id="quiz-container">
                     <div id="question"></div>
                     <div id="answers" class="answers"></div>
@@ -46,7 +62,10 @@
 
             <!-- Экран квеста -->
             <section id="screen-quest" class="screen">
-                <h2 id="quest-title"></h2>
+                <div class="quest-header">
+                    <button class="btn-back" onclick="exitQuest()">← Назад</button>
+                    <h2 id="quest-title">Квест: Путь к успеху АГРОЭКО</h2>
+                </div>
                 <div id="quest-image" class="quest-image"></div>
                 <p id="quest-description" class="quest-description"></p>
                 <div id="quest-options" class="answers"></div>
@@ -54,16 +73,28 @@
 
             <!-- Экран магазина -->
             <section id="screen-store" class="screen">
-                <h2>Магазин призов</h2>
+                <div class="screen-header">
+                    <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
+                    <h2>Магазин призов</h2>
+                </div>
                 <p>Обменивайте ваши пяточки на уникальные призы от АГРОЭКО!</p>
                 <div id="store-items" class="store-container"></div>
             </section>
 
-            <!-- Экран профиля и данных для приза -->
+            <!-- Экран профиля -->
             <section id="screen-profile" class="screen">
-                <h2>Мой профиль</h2>
-                <div class="profile-stats">
-                    <p>Ваш баланс: <strong><span id="profile-score">0</span> 🐽</strong></p>
+                <div class="screen-header">
+                    <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
+                    <h2>Мой профиль</h2>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <img id="user-avatar" src="" alt="Аватар">
+                    </div>
+                    <div class="profile-details">
+                        <h3 id="profile-full-name"></h3>
+                        <p id="profile-user-name"></p>
+                    </div>
                 </div>
                 <div class="profile-form">
                     <h3>Для получения физического приза заполните данные:</h3>
@@ -76,6 +107,32 @@
                 <div class="profile-purchases">
                     <h3>Ваши полученные призы:</h3>
                     <ul id="user-purchases"></ul>
+                </div>
+            </section>
+
+            <!-- Экран статистики -->
+            <section id="screen-stats" class="screen">
+                <div class="screen-header">
+                    <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
+                    <h2>Моя статистика</h2>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Общее количество пяточков</h3>
+                        <p class="stat-number"><span id="stat-total-score">0</span> 🐽</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Пройдено тестов</h3>
+                        <p class="stat-number"><span id="stat-quizzes-completed">0</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Завершено квестов</h3>
+                        <p class="stat-number"><span id="stat-quests-completed">0</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Куплено призов</h3>
+                        <p class="stat-number"><span id="stat-items-purchased">0</span></p>
+                    </div>
                 </div>
             </section>
 
