@@ -7,7 +7,7 @@ window.config = {
         questions: [
             {
                 question: "В каком году была основана компания АГРОЭКО?",
-                answers: ["2009 год", "2005 год", "2012 год"],
+                answers: ["2009 год", "2012 год", "2015 год"],
                 correct: 0
             },
             {
@@ -31,7 +31,8 @@ window.config = {
                 correct: 1
             }
         ],
-        rewardPerQuestion: 3
+        rewardPerQuestion: 3,
+        completionBonus: 10
     },
 
     // НАСТРОЙКИ КВЕСТА
@@ -64,14 +65,10 @@ window.config = {
                     { text: "Полный цикл производства собственных экологичных кормов", nextStep: 3, correct: true },
                     { text: "Смешанная стратегия", nextStep: -1 }
                 ]
-            },
-            {
-                description: "Поздравляем! Вы успешно прошли все этапы и поняли философию АГРОЭКО - современные технологии и забота о природе и животных!",
-                image: "https://images.unsplash.com/photo-1589923188937-cb64779f4abe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-                options: []
             }
         ],
-        rewardPerStep: 5
+        rewardPerStep: 5,
+        completionBonus: 20
     },
 
     // НАСТРОЙКИ МАГАЗИНА
@@ -109,4 +106,3 @@ window.config = {
         ]
     }
 };
-
