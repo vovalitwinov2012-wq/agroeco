@@ -6,6 +6,7 @@
     --white: #FFFFFF;
     --light-gray: #f5f5f5;
     --text-dark: #333333;
+    --border-radius: 12px;
 }
 
 /* BASE STYLES */
@@ -38,26 +39,44 @@ body {
 header {
     background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
     color: var(--white);
-    padding: 20px;
-    text-align: center;
-    position: relative;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: relative;
 }
 
 header .logo {
-    height: 50px;
-    margin-bottom: 15px;
+    height: 40px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.user-info {
+    text-align: left;
+    font-size: 14px;
+}
+
+.user-info span {
+    display: block;
+}
+
+#userUserName {
+    font-size: 12px;
+    opacity: 0.8;
 }
 
 .score-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
     background: rgba(255, 255, 255, 0.2);
     padding: 8px 15px;
     border-radius: 20px;
     font-weight: bold;
     backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .pig-nose {
@@ -87,13 +106,63 @@ header .logo {
     to { opacity: 1; transform: translateY(0); }
 }
 
+.screen-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: var(--dark-green);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    width: auto;
+    max-width: none;
+}
+
 .screen-image {
     width: 100%;
     max-height: 200px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     margin-bottom: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* LOADING SCREEN */
+#screen-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.loading-content {
+    max-width: 300px;
+}
+
+.loading-logo {
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--light-green);
+    border-top: 4px solid var(--primary-green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* BUTTONS */
@@ -107,7 +176,7 @@ header .logo {
 button {
     border: none;
     padding: 15px 25px;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
@@ -146,11 +215,15 @@ button:disabled {
 }
 
 /* QUIZ STYLES */
-#quiz-progress {
+.quiz-header {
     text-align: center;
+    margin-bottom: 20px;
+}
+
+#quiz-progress {
     color: var(--dark-green);
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-top: 10px;
 }
 
 #question {
@@ -181,12 +254,17 @@ button:disabled {
 }
 
 /* QUEST STYLES */
+.quest-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
 .quest-image {
     width: 100%;
     height: 200px;
     background-size: cover;
     background-position: center;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     margin: 15px 0;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
@@ -194,7 +272,7 @@ button:disabled {
 .quest-description {
     background: var(--light-gray);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     margin: 15px 0;
     line-height: 1.6;
 }
@@ -209,7 +287,7 @@ button:disabled {
 .store-item {
     background: var(--white);
     border: 2px solid var(--light-green);
-    border-radius: 12px;
+    border-radius: var(--border-radius);
     padding: 20px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
@@ -248,18 +326,31 @@ button:disabled {
 }
 
 /* PROFILE STYLES */
-.profile-stats {
-    background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
-    padding: 20px;
-    border-radius: 10px;
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     margin-bottom: 20px;
-    text-align: center;
+    padding: 20px;
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+}
+
+.profile-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-details h3 {
+    margin-bottom: 5px;
 }
 
 .profile-form {
     background: var(--light-gray);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     margin-bottom: 20px;
 }
 
@@ -287,7 +378,7 @@ button:disabled {
 .profile-purchases {
     background: var(--white);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     border: 2px solid var(--light-green);
 }
 
@@ -306,6 +397,33 @@ button:disabled {
 
 .profile-purchases li:last-child {
     border-bottom: none;
+}
+
+/* STATS STYLES */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: var(--light-gray);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--dark-green);
 }
 
 /* SUCCESS SCREEN */
@@ -332,20 +450,37 @@ footer {
 /* RESPONSIVE */
 @media (max-width: 768px) {
     header {
-        padding: 15px;
+        padding: 12px 15px;
     }
     
     header .logo {
-        height: 40px;
+        height: 35px;
+    }
+    
+    .user-info {
+        font-size: 12px;
+    }
+    
+    #userUserName {
+        font-size: 11px;
     }
     
     .score-container {
-        position: static;
-        margin-top: 10px;
-        display: inline-block;
+        padding: 6px 12px;
+        font-size: 14px;
     }
     
     button {
         padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-info {
+        flex-direction: column;
+        text-align: center;
     }
 }
