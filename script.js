@@ -205,7 +205,7 @@ function loadQuestStep(stepIndex) {
 
 function questFailed() {
     showScreen('screen-success');
-    document.getElementById('success-message').textContent = 'Квест не пройден. Попробуйте еще раз, чтобы лучше узнать AgroEco!';
+    document.getElementById('success-message').textContent = 'Квест не пройден. Попробуйте еще раз, чтобы лучше узнать АГРОЭКО!';
 }
 
 function questFinished() {
