@@ -4,6 +4,10 @@ let tg;
 let userData = {
     score: 0,
     purchases: [],
+    completed: {
+        quiz: false,
+        quest: false
+    },
     stats: {
         quizzesCompleted: 0,
         questsCompleted: 0,
@@ -22,11 +26,9 @@ let currentQuestStep = 0;
 function initTelegram() {
     tg = window.Telegram.WebApp;
     
-    // Ждем полной инициализации WebApp
     if (tg && tg.initDataUnsafe) {
         setupApp();
     } else {
-        // Если Telegram API еще не загружен, ждем
         setTimeout(initTelegram, 100);
     }
 }
@@ -67,10 +69,9 @@ function loadUserData() {
             userData = { ...userData, ...parsedData };
         }
         updateUI();
-        showScreen('screen-menu');
+        updateMenuButtons();
     } catch (e) {
         console.error('Error loading user data:', e);
-        showScreen('screen-menu');
     }
 }
 
@@ -80,7 +81,6 @@ function saveUserData() {
     userData.profile.phone = document.getElementById('user-phone').value;
     userData.profile.address = document.getElementById('user-address').value;
     
-    // Сохраняем в хранилище Telegram
     tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
     
     const statusElement = document.getElementById('profile-save-status');
@@ -105,6 +105,22 @@ function updateUI() {
     updatePurchasesList();
 }
 
+// Обновление кнопок меню
+function updateMenuButtons() {
+    const quizBtn = document.getElementById('quiz-btn');
+    const questBtn = document.getElementById('quest-btn');
+    
+    if (userData.completed.quiz) {
+        quizBtn.textContent = '✅ Тест пройден';
+        quizBtn.disabled = true;
+    }
+    
+    if (userData.completed.quest) {
+        questBtn.textContent = '✅ Квест пройден';
+        questBtn.disabled = true;
+    }
+}
+
 // Показ экранов
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
@@ -112,7 +128,6 @@ function showScreen(screenId) {
     });
     document.getElementById(screenId).classList.add('active');
     
-    // Специфическая логика для разных экранов
     if (screenId === 'screen-profile') {
         document.getElementById('user-name').value = userData.profile.name || '';
         document.getElementById('user-phone').value = userData.profile.phone || '';
@@ -131,7 +146,6 @@ function updateScore(points) {
     tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
     updateUI();
     
-    // Анимация добавления баллов
     if (points > 0) {
         const scoreElement = document.getElementById('userScore');
         scoreElement.style.transform = 'scale(1.5)';
@@ -145,6 +159,12 @@ function updateScore(points) {
 
 // ТЕСТ
 function startQuiz() {
+    if (userData.completed.quiz) {
+        showScreen('screen-completed');
+        document.getElementById('completed-message').textContent = 'Вы уже прошли этот тест и получили свои награды!';
+        return;
+    }
+    
     currentQuestion = 0;
     showScreen('screen-quiz');
     loadQuestion();
@@ -204,10 +224,11 @@ function exitQuiz() {
 }
 
 function finishQuiz() {
-    // Добавляем бонус за завершение теста
     updateScore(config.quiz.completionBonus);
     userData.stats.quizzesCompleted++;
+    userData.completed.quiz = true;
     tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+    updateMenuButtons();
     
     showScreen('screen-success');
     document.getElementById('success-message').textContent = 
@@ -216,6 +237,12 @@ function finishQuiz() {
 
 // КВЕСТ
 function startQuest() {
+    if (userData.completed.quest) {
+        showScreen('screen-completed');
+        document.getElementById('completed-message').textContent = 'Вы уже прошли этот квест и получили свои награды!';
+        return;
+    }
+    
     currentQuestStep = 0;
     showScreen('screen-quest');
     loadQuestStep(currentQuestStep);
@@ -232,15 +259,14 @@ function loadQuestStep(stepIndex) {
     }
 
     const step = config.quest.steps[stepIndex];
-    document.getElementById('quest-title').textContent = config.quest.title;
     document.getElementById('quest-description').textContent = step.description;
+    document.getElementById('quest-progress').textContent = `Шаг ${stepIndex + 1} из ${config.quest.steps.length}`;
     
-    // Устанавливаем изображение для квеста
     const questImage = document.getElementById('quest-image');
     questImage.style.backgroundImage = `url('${step.image}')`;
 
-    const optionsContainer = document.getElementById('quest-options');
-    optionsContainer.innerHTML = '';
+    const answersContainer = document.getElementById('quest-answers');
+    answersContainer.innerHTML = '';
 
     step.options.forEach(option => {
         const button = document.createElement('button');
@@ -252,7 +278,7 @@ function loadQuestStep(stepIndex) {
             currentQuestStep = option.nextStep;
             loadQuestStep(option.nextStep);
         };
-        optionsContainer.appendChild(button);
+        answersContainer.appendChild(button);
     });
 }
 
@@ -268,10 +294,11 @@ function questFailed() {
 }
 
 function questFinished() {
-    // Добавляем бонус за завершение квеста
     updateScore(config.quest.completionBonus);
     userData.stats.questsCompleted++;
+    userData.completed.quest = true;
     tg.CloudStorage.setItem('user_data', JSON.stringify(userData));
+    updateMenuButtons();
     
     showScreen('screen-success');
     document.getElementById('success-message').textContent = 
@@ -326,11 +353,7 @@ function updatePurchasesList() {
         const item = config.store.items.find(i => i.id === purchaseId);
         if (item) {
             const li = document.createElement('li');
-            li.textContent = item.name;
-            li.innerHTML = `
-                <span>${item.name}</span>
-                <span>✅</span>
-            `;
+            li.innerHTML = `<span>${item.name}</span><span>✅</span>`;
             purchasesList.appendChild(li);
         }
     });
