@@ -116,6 +116,7 @@ header .logo {
 .quiz-header {
     text-align: center;
     margin-bottom: 20px;
+    position: relative;
 }
 
 .btn-back {
@@ -128,7 +129,8 @@ header .logo {
     width: auto;
     max-width: none;
     position: absolute;
-    left: 20px;
+    left: 0;
+    top: 0;
 }
 
 .screen-image {
@@ -189,6 +191,16 @@ button {
 .btn-secondary:hover {
     background: var(--primary-green);
     color: var(--white);
+}
+
+.btn-admin {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: var(--white);
+}
+
+.btn-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
 button:disabled {
@@ -416,6 +428,61 @@ button:disabled {
     font-size: 28px;
 }
 
+/* ADMIN STYLES */
+.admin-content {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-actions button {
+    max-width: 200px;
+    margin: 0;
+}
+
+.orders-table-container {
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.orders-table th {
+    background: var(--primary-green);
+    color: var(--white);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+.orders-table tr:hover {
+    background: var(--light-green);
+}
+
+.orders-table td {
+    font-size: 14px;
+}
+
 /* FOOTER */
 footer {
     background: var(--dark-green);
@@ -470,5 +537,22 @@ footer {
     
     #quiz-progress, #quest-progress {
         font-size: 14px;
+    }
+    
+    .orders-table {
+        font-size: 12px;
+    }
+    
+    .orders-table th,
+    .orders-table td {
+        padding: 8px;
+    }
+    
+    .admin-actions {
+        flex-direction: column;
+    }
+    
+    .admin-actions button {
+        max-width: 100%;
     }
 }
