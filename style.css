@@ -113,6 +113,11 @@ header .logo {
     gap: 15px;
 }
 
+.quiz-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
 .btn-back {
     background: none;
     border: none;
@@ -122,6 +127,8 @@ header .logo {
     padding: 5px;
     width: auto;
     max-width: none;
+    position: absolute;
+    left: 20px;
 }
 
 .screen-image {
@@ -131,38 +138,6 @@ header .logo {
     border-radius: var(--border-radius);
     margin-bottom: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* LOADING SCREEN */
-#screen-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.loading-content {
-    max-width: 300px;
-}
-
-.loading-logo {
-    height: 80px;
-    margin-bottom: 20px;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--light-green);
-    border-top: 4px solid var(--primary-green);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 20px auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-   100% { transform: rotate(360deg); }
 }
 
 /* BUTTONS */
@@ -197,6 +172,14 @@ button {
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
+.btn-primary:disabled {
+    background: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .btn-secondary {
     background: var(--light-gray);
     color: var(--text-dark);
@@ -215,15 +198,11 @@ button:disabled {
 }
 
 /* QUIZ STYLES */
-.quiz-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-#quiz-progress {
+#quiz-progress, #quest-progress {
     color: var(--dark-green);
     font-weight: bold;
     margin-top: 10px;
+    font-size: 16px;
 }
 
 #question {
@@ -246,19 +225,16 @@ button:disabled {
     padding: 15px;
     background: var(--light-gray);
     border: 2px solid transparent;
+    transition: all 0.3s ease;
 }
 
 .answers button:hover {
     border-color: var(--primary-green);
     background: var(--white);
+    transform: translateY(-2px);
 }
 
 /* QUEST STYLES */
-.quest-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
 .quest-image {
     width: 100%;
     height: 200px;
@@ -275,6 +251,8 @@ button:disabled {
     border-radius: var(--border-radius);
     margin: 15px 0;
     line-height: 1.6;
+    font-size: 16px;
+    text-align: center;
 }
 
 /* STORE STYLES */
@@ -470,6 +448,12 @@ footer {
         font-size: 14px;
     }
     
+    .btn-back {
+        position: relative;
+        left: 0;
+        margin-bottom: 15px;
+    }
+    
     button {
         padding: 12px 20px;
         font-size: 14px;
@@ -482,5 +466,9 @@ footer {
     .profile-info {
         flex-direction: column;
         text-align: center;
+    }
+    
+    #quiz-progress, #quest-progress {
+        font-size: 14px;
     }
 }
