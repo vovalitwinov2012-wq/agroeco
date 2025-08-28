@@ -29,13 +29,31 @@
                 <h2>Добро пожаловать, <span id="menu-user-name">Друг</span>!</h2>
                 <p>Изучайте компанию АГРОЭКО, участвуйте в викторинах и получайте награды!</p>
                 <div class="button-container">
-                    <button class="btn-primary" onclick="startQuiz()" id="quiz-btn">🌱 Пройти тест</button>
-                    <button class="btn-primary" onclick="startQuest()" id="quest-btn">🏞️ Начать квест</button>
+                    <button class="btn-primary" onclick="showIntro('quiz')" id="quiz-btn">🌱 Пройти тест</button>
+                    <button class="btn-primary" onclick="showIntro('quest')" id="quest-btn">🏞️ Начать квест</button>
                     <button class="btn-secondary" onclick="showScreen('screen-store')">🛒 Магазин призов</button>
                     <button class="btn-secondary" onclick="showScreen('screen-profile')">👤 Мой профиль</button>
                     <button class="btn-secondary" onclick="showScreen('screen-stats')">📊 Моя статистика</button>
+                    <button class="btn-secondary" onclick="showScreen('screen-news')">📰 Новости компании</button>
                     <!-- Скрытая кнопка для админа -->
                     <button class="btn-admin" onclick="showScreen('screen-admin')" id="admin-btn" style="display: none;">⚙️ Админ-панель</button>
+                </div>
+            </section>
+
+            <!-- Экран введения -->
+            <section id="screen-intro" class="screen">
+                <div class="screen-header">
+                    <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
+                    <h2 id="intro-title"></h2>
+                </div>
+                <div class="intro-content">
+                    <img id="intro-image" src="" alt="" class="intro-image">
+                    <div id="intro-description" class="intro-description"></div>
+                    <div class="intro-reward">
+                        <h3>🎁 Награда за прохождение:</h3>
+                        <p id="intro-reward-text"></p>
+                    </div>
+                    <button class="btn-primary" id="start-activity">Начать</button>
                 </div>
             </section>
 
@@ -63,6 +81,7 @@
                 <div id="quest-image" class="quest-image"></div>
                 <div id="quest-description" class="quest-description"></div>
                 <div id="quest-answers" class="answers"></div>
+                <button id="next-quest-step" class="btn-primary" onclick="nextQuestStep()" disabled>Далее →</button>
             </section>
 
             <!-- Экран магазина -->
@@ -71,7 +90,16 @@
                     <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
                     <h2>Магазин призов</h2>
                 </div>
-                <p>Обменивайте ваши пяточки на уникальные призы от АГРОЭКО!</p>
+                <div class="store-instructions">
+                    <h3>🎯 Как получить приз:</h3>
+                    <ol>
+                        <li>Выберите приз из списка ниже</li>
+                        <li>Перейдите в "Мой профиль"</li>
+                        <li>Заполните свои данные (ФИО, телефон, адрес)</li>
+                        <li>Сохраните данные</li>
+                        <li>Менеджер свяжется с вами для подтверждения и выдачи приза</li>
+                    </ol>
+                </div>
                 <div id="store-items" class="store-container"></div>
             </section>
 
@@ -92,7 +120,7 @@
                     </div>
                 </div>
                 <div class="profile-form">
-                    <h3>Для получения физического приза заполните данные:</h3>
+                    <h3>📝 Для получения приза заполните данные:</h3>
                     <input type="text" id="user-name" placeholder="Ваше ФИО">
                     <input type="tel" id="user-phone" placeholder="Ваш телефон">
                     <input type="text" id="user-address" placeholder="Ваш адрес">
@@ -100,7 +128,7 @@
                     <p id="profile-save-status"></p>
                 </div>
                 <div class="profile-purchases">
-                    <h3>Ваши полученные призы:</h3>
+                    <h3>🛍️ Ваши выбранные призы:</h3>
                     <ul id="user-purchases"></ul>
                 </div>
             </section>
@@ -131,6 +159,28 @@
                 </div>
             </section>
 
+            <!-- Экран новостей -->
+            <section id="screen-news" class="screen">
+                <div class="screen-header">
+                    <button class="btn-back" onclick="showScreen('screen-menu')">← Назад</button>
+                    <h2>📰 Новости компании</h2>
+                </div>
+                <div class="news-container">
+                    <div class="news-item">
+                        <h3>Последние новости из нашего Telegram-канала</h3>
+                        <p>Подпишитесь на канал <a href="https://t.me/gk_agroeco" target="_blank">@gk_agroeco</a>, чтобы быть в курсе всех событий!</p>
+                    </div>
+                    <div class="news-item">
+                        <h3>🎉 Специальная акция!</h3>
+                        <p>Участвуйте в викторинах и квестах, чтобы получить больше пяточков и обменять их на уникальные призы!</p>
+                    </div>
+                    <div class="news-item">
+                        <h3>🏆 Новые достижения</h3>
+                        <p>Наша компания продолжает развиваться и внедрять современные технологии в сельском хозяйстве.</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- Экран успеха -->
             <section id="screen-success" class="screen">
                 <div class="success-content">
@@ -156,12 +206,25 @@
                     <h2>Админ-панель</h2>
                 </div>
                 <div class="admin-content">
-                    <h3>Заказы пользователей</h3>
+                    <h3>👥 Управление пользователями</h3>
                     <div class="admin-actions">
-                        <button class="btn-primary" onclick="loadOrders()">🔄 Обновить</button>
+                        <button class="btn-primary" onclick="loadOrders()">🔄 Обновить заказы</button>
                         <button class="btn-secondary" onclick="exportOrders()">📊 Экспорт в CSV</button>
+                        <button class="btn-admin" onclick="showUserManagement()">👤 Управление пользователями</button>
                     </div>
+
+                    <div id="user-management" style="display: none; margin-top: 20px;">
+                        <h4>Сброс прогресса пользователя</h4>
+                        <input type="text" id="user-id-input" placeholder="ID пользователя" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-secondary" onclick="resetUserProgress()">🔄 Сбросить прогресс</button>
+                            <button class="btn-admin" onclick="deleteUserData()">🗑️ Удалить данные</button>
+                        </div>
+                        <p id="user-management-status" style="margin-top: 10px;"></p>
+                    </div>
+
                     <div class="orders-table-container">
+                        <h3>📦 Заказы пользователей</h3>
                         <table class="orders-table">
                             <thead>
                                 <tr>
@@ -190,12 +253,20 @@
         <div id="purchase-modal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal()">&times;</span>
-                <h2>Подтверждение покупки</h2>
+                <h2>✅ Выбор приза</h2>
                 <div id="modal-item-info"></div>
-                <p>После покупки заполните данные для доставки в вашем профиле.</p>
+                <div class="modal-instructions">
+                    <h4>📋 Как получить приз:</h4>
+                    <ol>
+                        <li>Перейдите в "Мой профиль"</li>
+                        <li>Заполните свои данные</li>
+                        <li>Сохраните данные</li>
+                        <li>Менеджер свяжется с вами для выдачи приза</li>
+                    </ol>
+                </div>
                 <div class="modal-actions">
                     <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-                    <button class="btn-primary" onclick="confirmPurchase()">Купить</button>
+                    <button class="btn-primary" onclick="confirmPurchase()">Выбрать приз</button>
                 </div>
             </div>
         </div>
@@ -203,11 +274,14 @@
         <!-- Модальное окно успешной покупки -->
         <div id="success-modal" class="modal">
             <div class="modal-content">
-                <h2>🎉 Поздравляем с покупкой!</h2>
+                <h2>🎉 Приз выбран!</h2>
                 <p id="success-modal-message"></p>
+                <div class="modal-instructions">
+                    <p><strong>Далее:</strong> Перейдите в "Мой профиль", заполните данные и менеджер свяжется с вами!</p>
+                </div>
                 <div class="modal-actions">
-                    <button class="btn-primary" onclick="closeSuccessModal()">Отлично!</button>
-                    <button class="btn-secondary" onclick="goToProfile()">Заполнить данные</button>
+                    <button class="btn-primary" onclick="closeSuccessModal()">Понятно</button>
+                    <button class="btn-secondary" onclick="goToProfile()">Перейти в профиль</button>
                 </div>
             </div>
         </div>
