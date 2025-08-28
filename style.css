@@ -740,3 +740,172 @@ footer {
         font-size: 16px !important;
     }
 }
+/* ... (предыдущие стили остаются) ... */
+
+/* Новые стили для вступительного экрана */
+.intro-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.intro-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.intro-description {
+    background: var(--light-gray);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.intro-reward {
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    border: 2px solid var(--primary-green);
+}
+
+.intro-reward h3 {
+    color: var(--dark-green);
+    margin-bottom: 10px;
+}
+
+/* Стили для инструкций */
+.store-instructions {
+    background: var(--light-gray);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-green);
+}
+
+.store-instructions h3 {
+    color: var(--dark-green);
+    margin-bottom: 10px;
+}
+
+.store-instructions ol {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.store-instructions li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.modal-instructions {
+    background: var(--light-gray);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.modal-instructions h4 {
+    color: var(--dark-green);
+    margin-bottom: 8px;
+}
+
+.modal-instructions ol {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.modal-instructions li {
+    margin-bottom: 5px;
+}
+
+/* Стили для новостей */
+.news-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.news-item {
+    background: var(--light-gray);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-green);
+}
+
+.news-item h3 {
+    color: var(--dark-green);
+    margin-bottom: 10px;
+}
+
+.news-item p {
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.news-item a {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.news-item a:hover {
+    text-decoration: underline;
+}
+
+/* Улучшенные стили для квеста */
+#next-quest-step {
+    margin-top: 20px;
+}
+
+/* Адаптивность для новых элементов */
+@media (max-width: 768px) {
+    .intro-image {
+        max-height: 150px;
+    }
+    
+    .intro-description {
+        padding: 15px;
+        font-size: 14px;
+    }
+    
+    .store-instructions {
+        padding: 12px;
+    }
+    
+    .store-instructions ol {
+        padding-left: 15px;
+    }
+    
+    .news-item {
+        padding: 15px;
+    }
+    
+    .modal-instructions {
+        padding: 12px;
+        font-size: 13px;
+    }
+}
+
+/* Анимация для выбора ответов */
+.answers button.selected {
+    border: 2px solid var(--primary-green);
+    background: var(--light-green);
+    transform: scale(1.02);
+}
+
+.answers button.correct {
+    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    color: white;
+}
+
+.answers button.incorrect {
+    background: #ffebee;
+    color: #c62828;
+}
