@@ -1,4 +1,4 @@
-// SCRIPT.JS - ПОЛНОСТЬЮ ПЕРЕРАБОТАННЫЙ КОД
+// SCRIPT.JS - ПОЛНОСТЬЮ ПЕРЕРАБОТАННЫЙ КОД С ВСЕМИ НОВЫМИ ФУНКЦИЯМИ
 
 let tg;
 let userData = {
@@ -28,6 +28,8 @@ let currentQuestion = 0;
 let currentQuestStep = 0;
 let storageSyncInterval;
 let selectedItem = null;
+let currentActivity = null;
+let selectedAnswer = null;
 
 // УНИВЕРСАЛЬНАЯ СИСТЕМА ХРАНЕНИЯ ДАННЫХ
 class AgroEcoStorage {
@@ -35,101 +37,85 @@ class AgroEcoStorage {
         this.storageKey = 'agroeco_';
     }
     
-    // Сохранение данных
     async setItem(key, data) {
         const fullKey = this.storageKey + key;
         const dataToSave = {
             data: data,
             timestamp: Date.now(),
-            version: '1.0'
+            version: '1.1'
         };
         
-        // Сохраняем в localStorage
-        if (config.storage.useLocalStorage) {
-            try {
+        try {
+            if (config.storage.useLocalStorage) {
                 localStorage.setItem(fullKey, JSON.stringify(dataToSave));
-            } catch (e) {
-                console.warn('LocalStorage error:', e);
             }
-        }
-        
-        // Сохраняем в Telegram Cloud Storage
-        if (config.storage.useTelegramStorage && tg && tg.CloudStorage) {
-            try {
+            if (config.storage.useTelegramStorage && tg && tg.CloudStorage) {
                 tg.CloudStorage.setItem(fullKey, JSON.stringify(dataToSave));
-            } catch (e) {
-                console.warn('Telegram Cloud Storage error:', e);
             }
+        } catch (e) {
+            console.warn('Storage error:', e);
         }
     }
     
-    // Загрузка данных
     async getItem(key) {
         const fullKey = this.storageKey + key;
         let data = null;
         
-        // Пробуем загрузить из localStorage
-        if (config.storage.useLocalStorage) {
-            try {
+        try {
+            if (config.storage.useLocalStorage) {
                 const stored = localStorage.getItem(fullKey);
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    if (this.isDataValid(parsed)) {
-                        data = parsed.data;
-                    }
+                    if (this.isDataValid(parsed)) data = parsed.data;
                 }
-            } catch (e) {
-                console.warn('LocalStorage read error:', e);
             }
-        }
-        
-        // Если в localStorage нет данных, пробуем Telegram Cloud Storage
-        if (data === null && config.storage.useTelegramStorage && tg && tg.CloudStorage) {
-            try {
+            
+            if (data === null && config.storage.useTelegramStorage && tg && tg.CloudStorage) {
                 const stored = tg.CloudStorage.getItem(fullKey);
                 if (stored) {
                     const parsed = JSON.parse(stored);
                     if (this.isDataValid(parsed)) {
                         data = parsed.data;
-                        // Сохраняем обратно в localStorage
-                        if (config.storage.useLocalStorage) {
-                            this.setItem(key, data);
-                        }
+                        if (config.storage.useLocalStorage) this.setItem(key, data);
                     }
                 }
-            } catch (e) {
-                console.warn('Telegram Cloud Storage read error:', e);
             }
+        } catch (e) {
+            console.warn('Storage read error:', e);
         }
         
         return data;
     }
     
-    // Проверка валидности данных
     isDataValid(parsedData) {
-        return parsedData && 
-               parsedData.data !== undefined && 
-               parsedData.timestamp && 
-               parsedData.version === '1.0';
+        return parsedData && parsedData.data !== undefined && parsedData.version === '1.1';
+    }
+    
+    async removeItem(key) {
+        const fullKey = this.storageKey + key;
+        try {
+            if (config.storage.useLocalStorage) localStorage.removeItem(fullKey);
+            if (config.storage.useTelegramStorage && tg && tg.CloudStorage) {
+                tg.CloudStorage.removeItem(fullKey);
+            }
+        } catch (e) {
+            console.warn('Storage remove error:', e);
+        }
     }
 }
 
 const storage = new AgroEcoStorage();
 
-// ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP
+// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
 function initTelegram() {
     try {
         tg = window.Telegram.WebApp;
-        
         if (tg && tg.initDataUnsafe) {
             setupApp();
         } else {
-            // Ждем инициализации Telegram
             setTimeout(initTelegram, 100);
         }
     } catch (error) {
-        console.error('Error initializing Telegram:', error);
-        // Запускаем в standalone режиме
         setupStandaloneApp();
     }
 }
@@ -139,37 +125,27 @@ function setupApp() {
         tg.expand();
         tg.enableClosingConfirmation();
         
-        // Получаем данные пользователя
         const user = tg.initDataUnsafe.user;
         if (user) {
             userData.userId = user.id;
             userData.username = user.username || '';
             userData.firstName = user.first_name;
-            
-            // Обновляем UI
             updateUserInfo(user);
         }
         
-        // Загружаем данные пользователя
         loadUserData();
-        
-        // Запускаем синхронизацию
         startStorageSync();
         
     } catch (error) {
-        console.error('Error setting up app:', error);
         setupStandaloneApp();
     }
 }
 
 function setupStandaloneApp() {
-    // Режим без Telegram (для тестирования)
     userData.userId = 'test_user_' + Date.now();
     userData.firstName = 'Тестовый пользователь';
-    
     document.getElementById('userFirstName').textContent = userData.firstName;
     document.getElementById('menu-user-name').textContent = userData.firstName;
-    
     loadUserData();
 }
 
@@ -191,20 +167,18 @@ function updateUserInfo(user) {
         document.getElementById('user-avatar').src = user.photo_url;
     }
     
-    // Показываем кнопку админа если это администратор
     if (user.id === config.adminId) {
         document.getElementById('admin-btn').style.display = 'block';
     }
 }
 
-// ЗАГРУЗКА И СОХРАНЕНИЕ ДАННЫХ
+// УПРАВЛЕНИЕ ДАННЫМИ
 async function loadUserData() {
     try {
         if (!userData.userId) return;
         
         const savedData = await storage.getItem('user_data_' + userData.userId);
         if (savedData) {
-            // Сохраняем только данные, не перезаписываем идентификаторы
             Object.assign(userData, {
                 ...savedData,
                 userId: userData.userId,
@@ -230,10 +204,9 @@ async function saveUserData() {
         userData.lastSave = Date.now();
         await storage.setItem('user_data_' + userData.userId, userData);
         
-        showSaveStatus('Данные успешно сохранены!', true);
+        showSaveStatus('Данные успешно сохранены! ✅ Менеджер свяжется с вами для выдачи призов.', true);
         
     } catch (error) {
-        console.error('Error saving user data:', error);
         showSaveStatus('Ошибка сохранения!', false);
     }
 }
@@ -242,10 +215,7 @@ function showSaveStatus(message, isSuccess) {
     const statusElement = document.getElementById('profile-save-status');
     statusElement.textContent = message;
     statusElement.style.color = isSuccess ? '#4CAF50' : '#ff0000';
-    
-    setTimeout(() => {
-        statusElement.textContent = '';
-    }, 3000);
+    setTimeout(() => statusElement.textContent = '', 5000);
 }
 
 async function autoSaveUserData() {
@@ -260,13 +230,8 @@ async function autoSaveUserData() {
 }
 
 function startStorageSync() {
-    if (storageSyncInterval) {
-        clearInterval(storageSyncInterval);
-    }
-    
-    storageSyncInterval = setInterval(async () => {
-        await autoSaveUserData();
-    }, config.storage.syncInterval);
+    if (storageSyncInterval) clearInterval(storageSyncInterval);
+    storageSyncInterval = setInterval(autoSaveUserData, config.storage.syncInterval);
 }
 
 // УПРАВЛЕНИЕ ЭКРАНАМИ
@@ -279,22 +244,30 @@ function showScreen(screenId) {
     if (targetScreen) {
         targetScreen.classList.add('active');
         
-        // Специфическая логика для экранов
         switch(screenId) {
-            case 'screen-profile':
-                initProfileScreen();
-                break;
-            case 'screen-store':
-                loadStoreItems();
-                break;
-            case 'screen-stats':
-                updateUI();
-                break;
-            case 'screen-admin':
-                loadOrders();
-                break;
+            case 'screen-profile': initProfileScreen(); break;
+            case 'screen-store': loadStoreItems(); break;
+            case 'screen-stats': updateUI(); break;
+            case 'screen-admin': loadOrders(); break;
         }
     }
+}
+
+function showIntro(activityType) {
+    currentActivity = activityType;
+    const activityConfig = config[activityType];
+    
+    document.getElementById('intro-title').textContent = activityConfig.intro.title;
+    document.getElementById('intro-image').src = activityConfig.intro.image;
+    document.getElementById('intro-description').textContent = activityConfig.intro.description;
+    document.getElementById('intro-reward-text').textContent = activityConfig.intro.reward;
+    
+    document.getElementById('start-activity').onclick = () => {
+        if (activityType === 'quiz') startQuiz();
+        else if (activityType === 'quest') startQuest();
+    };
+    
+    showScreen('screen-intro');
 }
 
 function initProfileScreen() {
@@ -310,7 +283,6 @@ function updateUI() {
     document.getElementById('stat-total-score').textContent = userData.stats.totalEarned;
     document.getElementById('stat-quizzes-completed').textContent = userData.stats.quizzesCompleted;
     document.getElementById('stat-quests-completed').textContent = userData.stats.questsCompleted;
-    
     updatePurchasesList();
 }
 
@@ -318,21 +290,11 @@ function updateMenuButtons() {
     const quizBtn = document.getElementById('quiz-btn');
     const questBtn = document.getElementById('quest-btn');
     
-    if (userData.completed.quiz) {
-        quizBtn.textContent = '✅ Тест пройден';
-        quizBtn.disabled = true;
-    } else {
-        quizBtn.textContent = '🌱 Пройти тест';
-        quizBtn.disabled = false;
-    }
+    quizBtn.textContent = userData.completed.quiz ? '✅ Тест пройден' : '🌱 Пройти тест';
+    quizBtn.disabled = userData.completed.quiz;
     
-    if (userData.completed.quest) {
-        questBtn.textContent = '✅ Квест пройден';
-        questBtn.disabled = true;
-    } else {
-        questBtn.textContent = '🏞️ Начать квест';
-        questBtn.disabled = false;
-    }
+    questBtn.textContent = userData.completed.quest ? '✅ Квест пройден' : '🏞️ Начать квест';
+    questBtn.disabled = userData.completed.quest;
 }
 
 async function updateScore(points) {
@@ -340,17 +302,13 @@ async function updateScore(points) {
     userData.stats.totalEarned += points;
     await autoSaveUserData();
     updateUI();
-    
-    if (points > 0) {
-        animateScoreIncrease();
-    }
+    if (points > 0) animateScoreIncrease();
 }
 
 function animateScoreIncrease() {
     const scoreElement = document.getElementById('userScore');
     scoreElement.style.transform = 'scale(1.3)';
     scoreElement.style.color = '#4CAF50';
-    
     setTimeout(() => {
         scoreElement.style.transform = 'scale(1)';
         scoreElement.style.color = '';
@@ -365,6 +323,7 @@ function startQuiz() {
     }
     
     currentQuestion = 0;
+    selectedAnswer = null;
     showScreen('screen-quiz');
     loadQuestion();
 }
@@ -382,42 +341,49 @@ function loadQuestion() {
     const answersContainer = document.getElementById('answers');
     answersContainer.innerHTML = '';
     document.getElementById('next-question').disabled = true;
+    selectedAnswer = null;
 
     q.answers.forEach((answer, index) => {
         const button = document.createElement('button');
         button.textContent = answer;
-        button.onclick = () => checkAnswer(index, button);
+        button.onclick = () => selectAnswer(index, button);
         answersContainer.appendChild(button);
     });
 }
 
-function checkAnswer(userChoice, buttonElement) {
-    const correctIndex = config.quiz.questions[currentQuestion].correct;
+function selectAnswer(answerIndex, buttonElement) {
+    // Сбрасываем предыдущий выбор
     const allButtons = document.getElementById('answers').getElementsByTagName('button');
-
-    // Блокируем все кнопки
-    Array.from(allButtons).forEach(btn => { 
-        btn.disabled = true;
-        btn.onclick = null;
-    });
-
-    if (userChoice === correctIndex) {
-        buttonElement.style.background = 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)';
-        buttonElement.style.color = 'white';
-        updateScore(config.quiz.rewardPerQuestion);
-    } else {
-        buttonElement.style.background = '#ffebee';
-        buttonElement.style.color = '#c62828';
-        allButtons[correctIndex].style.background = 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)';
-        allButtons[correctIndex].style.color = 'white';
-    }
-
+    Array.from(allButtons).forEach(btn => btn.classList.remove('selected'));
+    
+    // Устанавливаем новый выбор
+    buttonElement.classList.add('selected');
+    selectedAnswer = answerIndex;
     document.getElementById('next-question').disabled = false;
 }
 
 function nextQuestion() {
-    currentQuestion++;
-    loadQuestion();
+    if (selectedAnswer === null) return;
+    
+    const correctIndex = config.quiz.questions[currentQuestion].correct;
+    const allButtons = document.getElementById('answers').getElementsByTagName('button');
+    
+    // Показываем правильный ответ
+    Array.from(allButtons).forEach(btn => btn.disabled = true);
+    
+    if (selectedAnswer === correctIndex) {
+        allButtons[selectedAnswer].classList.add('correct');
+        updateScore(config.quiz.rewardPerQuestion);
+    } else {
+        allButtons[selectedAnswer].classList.add('incorrect');
+        allButtons[correctIndex].classList.add('correct');
+    }
+    
+    // Задержка перед следующим вопросом
+    setTimeout(() => {
+        currentQuestion++;
+        loadQuestion();
+    }, 1500);
 }
 
 function exitQuiz() {
@@ -447,6 +413,7 @@ function startQuest() {
     }
     
     currentQuestStep = 0;
+    selectedAnswer = null;
     showScreen('screen-quest');
     loadQuestStep(currentQuestStep);
 }
@@ -462,60 +429,56 @@ function loadQuestStep(stepIndex) {
     }
 
     const step = config.quest.steps[stepIndex];
-    
-    // Обновляем UI
     document.getElementById('quest-progress').textContent = `Шаг ${stepIndex + 1} из ${config.quest.steps.length}`;
     document.getElementById('quest-image').style.backgroundImage = `url('${step.image}')`;
     document.getElementById('quest-description').textContent = step.description;
 
-    // Создаем кнопки ответов
     const answersContainer = document.getElementById('quest-answers');
     answersContainer.innerHTML = '';
+    document.getElementById('next-quest-step').disabled = true;
+    selectedAnswer = null;
 
-    step.options.forEach((option) => {
+    step.options.forEach((option, index) => {
         const button = document.createElement('button');
         button.textContent = option.text;
-        button.onclick = () => handleQuestAnswer(option, answersContainer);
+        button.onclick = () => selectQuestAnswer(index, button);
         answersContainer.appendChild(button);
     });
 }
 
-function handleQuestAnswer(option, answersContainer) {
-    // Блокируем все кнопки
-    const allButtons = answersContainer.getElementsByTagName('button');
-    Array.from(allButtons).forEach(btn => { 
-        btn.disabled = true;
-        btn.onclick = null;
-    });
+function selectQuestAnswer(answerIndex, buttonElement) {
+    const allButtons = document.getElementById('quest-answers').getElementsByTagName('button');
+    Array.from(allButtons).forEach(btn => btn.classList.remove('selected'));
     
-    // Визуальная обратная связь
+    buttonElement.classList.add('selected');
+    selectedAnswer = answerIndex;
+    document.getElementById('next-quest-step').disabled = false;
+}
+
+function nextQuestStep() {
+    if (selectedAnswer === null) return;
+    
+    const step = config.quest.steps[currentQuestStep];
+    const option = step.options[selectedAnswer];
+    const allButtons = document.getElementById('quest-answers').getElementsByTagName('button');
+    
+    Array.from(allButtons).forEach(btn => btn.disabled = true);
+    
     if (option.correct) {
-        event.target.style.background = 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)';
-        event.target.style.color = 'white';
+        allButtons[selectedAnswer].classList.add('correct');
         updateScore(config.quest.rewardPerStep);
-        
-        setTimeout(() => {
-            currentQuestStep = option.nextStep;
-            loadQuestStep(option.nextStep);
-        }, 1000);
     } else {
-        event.target.style.background = '#ffebee';
-        event.target.style.color = '#c62828';
-        
-        // Подсвечиваем правильный ответ
-        const correctOption = config.quest.steps[currentQuestStep].options.find(opt => opt.correct);
-        if (correctOption) {
-            const correctIndex = config.quest.steps[currentQuestStep].options.indexOf(correctOption);
-            const correctButton = answersContainer.children[correctIndex];
-            correctButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)';
-            correctButton.style.color = 'white';
+        allButtons[selectedAnswer].classList.add('incorrect');
+        const correctIndex = step.options.findIndex(opt => opt.correct);
+        if (correctIndex !== -1) {
+            allButtons[correctIndex].classList.add('correct');
         }
-        
-        setTimeout(() => {
-            currentQuestStep = option.nextStep;
-            loadQuestStep(option.nextStep);
-        }, 1500);
     }
+    
+    setTimeout(() => {
+        currentQuestStep = option.nextStep;
+        loadQuestStep(option.nextStep);
+    }, 1500);
 }
 
 function exitQuest() {
@@ -559,7 +522,7 @@ function loadStoreItems() {
             <p>${item.description}</p>
             <p class="price">Цена: ${item.price} 🐽</p>
             <button ${!canBuy || isPurchased ? 'disabled' : ''}>
-                ${isPurchased ? 'Получено' : (canBuy ? 'Выбрать' : 'Недостаточно 🐽')}
+                ${isPurchased ? '✅ Выбрано' : (canBuy ? '🎁 Выбрать приз' : '❌ Недостаточно 🐽')}
             </button>
         `;
         
@@ -583,6 +546,7 @@ function openModal(item) {
         <p>${item.description}</p>
         <p class="price">Цена: ${item.price} 🐽</p>
         <p>Ваш баланс: <strong>${userData.score} 🐽</strong></p>
+        <p>Останется: <strong>${userData.score - item.price} 🐽</strong></p>
     `;
     
     modal.style.display = 'block';
@@ -613,12 +577,12 @@ async function confirmPurchase() {
         await autoSaveUserData();
         
         closeModal();
-        openSuccessModal(`Поздравляем с покупкой "${selectedItem.name}"! Для получения приза заполните данные в профиле.`);
+        openSuccessModal(`Приз "${selectedItem.name}" успешно выбран! 🎉`);
         
         loadStoreItems();
         updatePurchasesList();
     } else {
-        alert('Недостаточно средств или товар уже куплен!');
+        alert('Недостаточно средств или товар уже выбран!');
         closeModal();
     }
 }
@@ -628,7 +592,7 @@ function goToProfile() {
     showScreen('screen-profile');
 }
 
-// ЗАКАЗЫ И АДМИН-ПАНЕЛЬ
+// АДМИН-ПАНЕЛЬ
 async function saveOrder(itemId, itemName, price) {
     try {
         const order = {
@@ -683,6 +647,77 @@ async function loadOrders() {
     }
 }
 
+function showUserManagement() {
+    const userManagement = document.getElementById('user-management');
+    userManagement.style.display = userManagement.style.display === 'none' ? 'block' : 'none';
+}
+
+async function resetUserProgress() {
+    const userId = document.getElementById('user-id-input').value.trim();
+    if (!userId) {
+        showUserManagementStatus('Введите ID пользователя', false);
+        return;
+    }
+    
+    try {
+        const userData = await storage.getItem('user_data_' + userId);
+        if (!userData) {
+            showUserManagementStatus('Пользователь не найден', false);
+            return;
+        }
+        
+        // Сбрасываем прогресс, но сохраняем профиль
+        const resetData = {
+            ...userData,
+            score: 0,
+            purchases: [],
+            completed: { quiz: false, quest: false },
+            stats: {
+                quizzesCompleted: 0,
+                questsCompleted: 0,
+                totalEarned: 0
+            }
+        };
+        
+        await storage.setItem('user_data_' + userId, resetData);
+        showUserManagementStatus('Прогресс пользователя сброшен ✅', true);
+        
+    } catch (error) {
+        showUserManagementStatus('Ошибка сброса прогресса', false);
+    }
+}
+
+async function deleteUserData() {
+    const userId = document.getElementById('user-id-input').value.trim();
+    if (!userId) {
+        showUserManagementStatus('Введите ID пользователя', false);
+        return;
+    }
+    
+    if (!confirm('ВЫ УВЕРЕНЫ? Это удалит ВСЕ данные пользователя!')) return;
+    
+    try {
+        await storage.removeItem('user_data_' + userId);
+        
+        // Также удаляем заказы пользователя
+        const orders = await storage.getItem('all_orders') || [];
+        const filteredOrders = orders.filter(order => order.userId !== userId);
+        await storage.setItem('all_orders', filteredOrders);
+        
+        showUserManagementStatus('Данные пользователя удалены ✅', true);
+        
+    } catch (error) {
+        showUserManagementStatus('Ошибка удаления данных', false);
+    }
+}
+
+function showUserManagementStatus(message, isSuccess) {
+    const statusElement = document.getElementById('user-management-status');
+    statusElement.textContent = message;
+    statusElement.style.color = isSuccess ? '#4CAF50' : '#ff0000';
+    setTimeout(() => statusElement.textContent = '', 3000);
+}
+
 async function exportOrders() {
     try {
         const orders = await storage.getItem('all_orders') || [];
@@ -722,13 +757,13 @@ function updatePurchasesList() {
         const item = config.store.items.find(i => i.id === purchaseId);
         if (item) {
             const li = document.createElement('li');
-            li.innerHTML = `<span>${item.name}</span><span>✅</span>`;
+            li.innerHTML = `<span>${item.name}</span><span>✅ Выбрано</span>`;
             purchasesList.appendChild(li);
         }
     });
     
     if (userData.purchases.length === 0) {
-        purchasesList.innerHTML = '<li>У вас пока нет полученных призов</li>';
+        purchasesList.innerHTML = '<li>У вас пока нет выбранных призов</li>';
     }
 }
 
@@ -744,19 +779,14 @@ function showCompletedScreen(message) {
 
 // ОБРАБОТЧИКИ СОБЫТИЙ
 function setupEventListeners() {
-    // Закрытие модальных окон
     window.addEventListener('click', function(event) {
         const modal = document.getElementById('purchase-modal');
         const successModal = document.getElementById('success-modal');
-        
         if (event.target === modal) closeModal();
         if (event.target === successModal) closeSuccessModal();
     });
     
-    // Обработка перед закрытием
-    window.addEventListener('beforeunload', function() {
-        autoSaveUserData();
-    });
+    window.addEventListener('beforeunload', autoSaveUserData);
 }
 
 // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
