@@ -4,6 +4,13 @@ window.config = {
     // ID администратора (замените на ваш Telegram ID)
     adminId: 123456789,
     
+    // Настройки хранения данных
+    storage: {
+        useLocalStorage: true,
+        useTelegramStorage: true,
+        syncInterval: 30000
+    },
+    
     // НАСТРОЙКИ ТЕСТА
     quiz: {
         title: "Тест: Знакомство с АГРОЭКО",
@@ -35,7 +42,8 @@ window.config = {
             }
         ],
         rewardPerQuestion: 10,
-        completionBonus: 20
+        completionBonus: 20,
+        maxAttempts: 1
     },
 
     // НАСТРОЙКИ КВЕСТА
@@ -71,10 +79,11 @@ window.config = {
             }
         ],
         rewardPerStep: 10,
-        completionBonus: 30
+        completionBonus: 30,
+        maxAttempts: 1
     },
 
-    // НАСТРОЙКИ МАГАЗИНА
+    // НАСТРОЙКИ МАГАЗИНА (ОБНОВЛЕННЫЕ КАРТИНКИ)
     store: {
         title: "Магазин призов",
         items: [
@@ -83,28 +92,28 @@ window.config = {
                 name: "Фирменная ручка АГРОЭКО",
                 description: "Стильная ручка с логотипом компании для повседневных записей.",
                 price: 30,
-                image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Ручка+АГРОЭКО"
+                image: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
             },
             {
                 id: 2,
                 name: "Набор экопродукции",
                 description: "Вкуснейшие продукты от АГРОЭКО: свежие овощи и экологичное мясо.",
                 price: 60,
-                image: "https://via.placeholder.com/200x200/8BC34A/FFFFFF?text=Набор+Экопродукции"
+                image: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
             },
             {
                 id: 3,
                 name: "Фирменная футболка",
                 description: "Качественная хлопковая футболка с символикой АГРОЭКО.",
                 price: 80,
-                image: "https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=Футболка+АГРОЭКО"
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
             },
             {
                 id: 4,
                 name: "Экскурсия на ферму + полный набор",
                 description: "Увлекательная экскурсия на современную свиноферму компании + все призы!",
                 price: 100,
-                image: "https://via.placeholder.com/200x200/388E3C/FFFFFF?text=Главный+Приз"
+                image: "https://images.unsplash.com/photo-1589923188937-cb64779f4abe?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
             }
         ]
     }
