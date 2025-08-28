@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>АГРОЭКО Викторина 🐽</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -41,11 +41,11 @@
 
             <!-- Экран теста -->
             <section id="screen-quiz" class="screen">
-                <div class="quiz-header">
+                <div class="screen-header">
                     <button class="btn-back" onclick="exitQuiz()">← Назад</button>
                     <h2>Тест: Знакомство с АГРОЭКО</h2>
-                    <div id="quiz-progress">Вопрос 1 из 5</div>
                 </div>
+                <div id="quiz-progress">Вопрос 1 из 5</div>
                 <div id="quiz-container">
                     <div id="question"></div>
                     <div id="answers" class="answers"></div>
@@ -55,16 +55,14 @@
 
             <!-- Экран квеста -->
             <section id="screen-quest" class="screen">
-                <div class="quiz-header">
+                <div class="screen-header">
                     <button class="btn-back" onclick="exitQuest()">← Назад</button>
                     <h2>Квест: Путь к успеху АГРОЭКО</h2>
-                    <div id="quest-progress">Шаг 1 из 3</div>
                 </div>
-                <div id="quest-container">
-                    <div id="quest-image" class="quest-image"></div>
-                    <div id="quest-description" class="quest-description"></div>
-                    <div id="quest-answers" class="answers"></div>
-                </div>
+                <div id="quest-progress">Шаг 1 из 3</div>
+                <div id="quest-image" class="quest-image"></div>
+                <div id="quest-description" class="quest-description"></div>
+                <div id="quest-answers" class="answers"></div>
             </section>
 
             <!-- Экран магазина -->
@@ -162,7 +160,6 @@
                     <div class="admin-actions">
                         <button class="btn-primary" onclick="loadOrders()">🔄 Обновить</button>
                         <button class="btn-secondary" onclick="exportOrders()">📊 Экспорт в CSV</button>
-                        <button class="btn-admin" onclick="clearAllData()">🗑️ Очистить все данные</button>
                     </div>
                     <div class="orders-table-container">
                         <table class="orders-table">
@@ -176,12 +173,11 @@
                                     <th>Телефон</th>
                                     <th>Адрес</th>
                                     <th>Статус</th>
-                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody id="orders-table-body">
                                 <tr>
-                                    <td colspan="9">Загрузка данных...</td>
+                                    <td colspan="8">Загрузка данных...</td>
                                 </tr>
                             </tbody>
                         </table>
