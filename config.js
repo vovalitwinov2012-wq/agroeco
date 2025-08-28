@@ -2,7 +2,7 @@
 
 window.config = {
     // ID администратора (замените на ваш Telegram ID)
-    adminId: 123456789,
+    adminId: 1364794378,
     
     // Настройки хранения данных
     storage: {
@@ -136,3 +136,4 @@ window.config = {
         channelName: "@gk_agroeco"
     }
 };
+
