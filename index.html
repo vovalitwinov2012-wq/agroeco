@@ -60,8 +60,8 @@
                     <h2>Квест: Путь к успеху АГРОЭКО</h2>
                     <div id="quest-progress">Шаг 1 из 3</div>
                 </div>
-                <div id="quest-image" class="quest-image"></div>
                 <div id="quest-container">
+                    <div id="quest-image" class="quest-image"></div>
                     <div id="quest-description" class="quest-description"></div>
                     <div id="quest-answers" class="answers"></div>
                 </div>
@@ -162,6 +162,7 @@
                     <div class="admin-actions">
                         <button class="btn-primary" onclick="loadOrders()">🔄 Обновить</button>
                         <button class="btn-secondary" onclick="exportOrders()">📊 Экспорт в CSV</button>
+                        <button class="btn-admin" onclick="clearAllData()">🗑️ Очистить все данные</button>
                     </div>
                     <div class="orders-table-container">
                         <table class="orders-table">
@@ -175,11 +176,12 @@
                                     <th>Телефон</th>
                                     <th>Адрес</th>
                                     <th>Статус</th>
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody id="orders-table-body">
                                 <tr>
-                                    <td colspan="8">Загрузка данных...</td>
+                                    <td colspan="9">Загрузка данных...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -187,6 +189,32 @@
                 </div>
             </section>
         </main>
+
+        <!-- Модальное окно подтверждения покупки -->
+        <div id="purchase-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Подтверждение покупки</h2>
+                <div id="modal-item-info"></div>
+                <p>После покупки заполните данные для доставки в вашем профиле.</p>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+                    <button class="btn-primary" onclick="confirmPurchase()">Купить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно успешной покупки -->
+        <div id="success-modal" class="modal">
+            <div class="modal-content">
+                <h2>🎉 Поздравляем с покупкой!</h2>
+                <p id="success-modal-message"></p>
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="closeSuccessModal()">Отлично!</button>
+                    <button class="btn-secondary" onclick="goToProfile()">Заполнить данные</button>
+                </div>
+            </div>
+        </div>
 
         <footer>
             <p>© 2025 АГРОЭКО. Все права защищены.</p>
